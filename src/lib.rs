@@ -166,12 +166,11 @@ pub fn calculate_ur(map: &Beatmap, replay: &Replay) -> f64 {
     for (prev, obj) in hit_objects_iter {
         let mut hit = false;
 
-        for (j, frame) in replay_data.iter().enumerate() {
-            let prev_frame_keys: Buttons = match j > 0 {
-                false => Buttons::default(),
-                true => replay_data[j - 1].keys,
-            };
+        let replay_data_iter = iter::once(Buttons::default())
+            .chain(replay_data.iter().map(|frame| frame.keys))
+            .zip(replay_data.iter());
 
+        for (prev_frame_keys, frame) in replay_data_iter {
             let latest_hit = match obj.is_slider() {
                 false => obj.start_time + hit_window_50,
                 true => (obj.start_time + hit_window_50).min(obj.end_time().round()),
