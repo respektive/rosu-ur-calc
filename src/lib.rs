@@ -127,7 +127,7 @@ pub fn calculate_ur(map: &Beatmap, replay: &Replay) -> f64 {
         .without(Mod::Nightcore)
         .bits();
 
-    // https://github.com/ppy/osu/blob/master/osu.Game/Scoring/Legacy/LegacyScoreDecoder.cs#L263-L307
+    // https://github.com/ppy/osu/blob/bbeb62ea47f9a205a10964ac332cbe157d844a78/osu.Game/Scoring/Legacy/LegacyScoreDecoder.cs#L263-L307
     let replay_data: Vec<_> = replay
         .replay_data
         .as_ref()
