@@ -176,10 +176,11 @@ pub fn calculate_ur(map: &Beatmap, replay: &Replay) -> f64 {
                 true => (obj.start_time + hit_window_50).min(obj.end_time().round()),
             };
 
-            // cannot do the same for start_idx since the previous keys are required
-            // which come before the start_idx timestamp
-            let end_idx = replay_data.partition_point(|frame| frame.timestamp <= latest_hit);
-            let frames = &replay_data[..end_idx];
+            let start_idx = replay_data
+                .partition_point(|frame| frame.timestamp < obj.start_time - hit_window_50);
+            let end_idx =
+                replay_data[start_idx..].partition_point(|frame| frame.timestamp <= latest_hit);
+            let frames = &replay_data[..start_idx + end_idx];
 
             // start with no keys
             let hit_error = iter::once(Buttons::default())
@@ -187,7 +188,7 @@ pub fn calculate_ur(map: &Beatmap, replay: &Replay) -> f64 {
                 .chain(frames.iter().map(|frame| frame.keys))
                 // zip keys with successing frame
                 .zip(frames)
-                .skip_while(|(_, frame)| frame.timestamp < obj.start_time - hit_window_50)
+                .skip(start_idx)
                 .filter_map(|(prev_frame_keys, frame)| {
                     // filter out frames that are not hits
                     let in_circle = (frame.x - obj.stacked_pos().x)
