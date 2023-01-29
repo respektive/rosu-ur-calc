@@ -149,6 +149,7 @@ pub fn calculate_ur(map: &Beatmap, replay: &Replay) -> f64 {
     //let radius = 64.0 * (1.0 - 7.0 * (attrs.cs as f32 - 5.0) / 5.0) / 2.0;
     //let scale = (1.0 - 7.0 * (attrs.cs as f32 - 5.0) / 5.0) / 2.0;
     let radius = 23.05 - (attrs.cs as f32 - 7.0) * 4.4825;
+    let radius_sq = radius * radius;
     let hit_window_50 = 199.5 - attrs.od * 10.0;
     //let hit_window_50 = (150.0 + 50.0 * (5.0 - attrs.od) / 5.0) - 0.5;
 
@@ -180,7 +181,7 @@ pub fn calculate_ur(map: &Beatmap, replay: &Replay) -> f64 {
                     let in_circle = (frame.x - obj.stacked_pos().x)
                         * (frame.x - obj.stacked_pos().x)
                         + (frame.y - obj.stacked_pos().y) * (frame.y - obj.stacked_pos().y)
-                        < (radius * radius);
+                        < radius_sq;
 
                     let m1 = frame.keys.m1() && !prev_frame_keys.m1();
                     let m2 = frame.keys.m2() && !prev_frame_keys.m2();
@@ -197,10 +198,10 @@ pub fn calculate_ur(map: &Beatmap, replay: &Replay) -> f64 {
                                 * (frame.x - prev.stacked_pos().x)
                                 + (frame.y - prev.stacked_pos().y)
                                     * (frame.y - prev.stacked_pos().y)
-                                < (radius * radius);
+                                < radius_sq;
                             let sliderlock =
                                 press && in_prev_cirle && frame.timestamp < prev.end_time();
-                            notelock = notelock || sliderlock;
+                            notelock |= sliderlock;
                         }
 
                         notelock
