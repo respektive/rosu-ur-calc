@@ -107,4 +107,22 @@ mod tests {
             204.31,
         )
     }
+
+    #[test]
+    fn ekoro_barusa() {
+        compare_ur(
+            "Nico Nico Douga - BARUSA of MIKOSU (DJPop) [TAG4]",
+            "replay-osu_24722_4355141481",
+            115.33,
+        )
+    }
+
+    #[test]
+    fn peachick_rog() {
+        compare_ur(
+            "07th Expansion - rog-unlimitation (AngelHoney) [AngelHoney]",
+            "replay-osu_116128_1110865601",
+            93.60,
+        )
+    }
 }
