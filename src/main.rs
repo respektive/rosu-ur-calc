@@ -80,4 +80,13 @@ mod tests {
             96.14,
         )
     }
+
+    #[test]
+    fn wolf_gitaroo() {
+        compare_ur(
+            "Gitaroo Man - Soft Machine (Ash) [Master Mode]",
+            "replay-osu_21724_5259762",
+            222.60,
+        )
+    }
 }
