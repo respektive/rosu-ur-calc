@@ -186,9 +186,8 @@ pub fn calculate_ur(map: &Beatmap, replay: &Replay) -> f64 {
                 .chain(frames.iter().map(|frame| frame.keys)) // followed by frame keys
                 .zip(frames) // zip keys with successing frame
                 .skip_while(|(_, frame)| frame.timestamp < obj.start_time - hit_window_50)
-                .filter(|(_, frame)| !used_frames.contains(&frame.timestamp.to_bits()))
-                .find_map(|(prev_frame_keys, frame)| {
-                    // calculate in_circle, press, and notelock
+                .filter_map(|(prev_frame_keys, frame)| {
+                    // filter out frames that are not hits
                     let in_circle = (frame.x - obj.stacked_pos().x)
                         * (frame.x - obj.stacked_pos().x)
                         + (frame.y - obj.stacked_pos().y) * (frame.y - obj.stacked_pos().y)
@@ -218,13 +217,10 @@ pub fn calculate_ur(map: &Beatmap, replay: &Replay) -> f64 {
                         notelock
                     });
 
-                    (in_circle && press && !notelock).then_some(frame.timestamp)
+                    (in_circle && press && !notelock).then_some(frame)
                 })
-                .map(|frame_timestamp| {
-                    used_frames.insert(frame_timestamp.to_bits());
-
-                    frame_timestamp - obj.start_time
-                });
+                .find(|frame| used_frames.insert(frame.timestamp.to_bits()))
+                .map(|frame| frame.timestamp - obj.start_time);
 
             *prev_hit = hit_error.is_some();
 
