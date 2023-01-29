@@ -162,14 +162,16 @@ pub fn calculate_ur(map: &Beatmap, replay: &Replay) -> f64 {
         .zip(hit_objects.iter())
         .filter(|(_, h)| !h.is_spinner())
         .scan(false, |prev_hit, (prev, obj)| {
-            let hit_error = iter::once(Buttons::default())
-                .chain(replay_data.iter().map(|frame| frame.keys))
-                .zip(replay_data.iter())
+            let hit_error = iter::once(Buttons::default()) // start with no keys
+                .chain(replay_data.iter().map(|frame| frame.keys)) // followed by frame keys
+                .zip(replay_data.iter()) // zip keys with successing frame
                 .filter(|(_, frame)| {
+                    // only consider frame within 50s hitwindow
                     !(frame.timestamp < obj.start_time - hit_window_50
                         || used_frames.contains(&frame.timestamp.to_bits()))
                 })
                 .take_while(|(_, frame)| {
+                    // take until hitwindow no longer attainable
                     let latest_hit = match obj.is_slider() {
                         false => obj.start_time + hit_window_50,
                         true => (obj.start_time + hit_window_50).min(obj.end_time().round()),
@@ -178,6 +180,7 @@ pub fn calculate_ur(map: &Beatmap, replay: &Replay) -> f64 {
                     frame.timestamp <= latest_hit
                 })
                 .find_map(|(prev_frame_keys, frame)| {
+                    // calculate in_circle, press, and notelock
                     let in_circle = (frame.x - obj.stacked_pos().x)
                         * (frame.x - obj.stacked_pos().x)
                         + (frame.y - obj.stacked_pos().y) * (frame.y - obj.stacked_pos().y)
