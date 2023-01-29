@@ -3,6 +3,10 @@ use std::collections::HashSet;
 use osu_db::{Mod, Replay};
 use rosu_pp::{Beatmap, BeatmapExt};
 
+use self::models::{Buttons, ReplayData};
+
+mod models;
+
 pub fn calculate_ur(map: &Beatmap, replay: &Replay) -> f64 {
     let mods = replay
         .mods
@@ -49,7 +53,7 @@ pub fn calculate_ur(map: &Beatmap, replay: &Replay) -> f64 {
         let mut hit = false;
         for (j, frame) in replay_data.iter().enumerate() {
             let prev_frame_keys: Buttons = match j > 0 {
-                false => Buttons(0),
+                false => Buttons::default(),
                 true => replay_data[j - 1].keys,
             };
             let latest_hit = match obj.is_slider() {
@@ -113,54 +117,4 @@ pub fn calculate_ur(map: &Beatmap, replay: &Replay) -> f64 {
     variance /= len;
 
     variance.sqrt() * 10.0
-}
-
-#[derive(Debug)]
-struct ReplayData {
-    timestamp: f64,
-    x: f32,
-    y: f32,
-    keys: Buttons,
-}
-
-#[derive(Debug, Copy, Clone)]
-struct Buttons(u8);
-
-impl Buttons {
-    const M1: u8 = 1 << 0;
-    const M2: u8 = 1 << 1;
-    const K1: u8 = 1 << 2;
-    const K2: u8 = 1 << 3;
-
-    fn from_f32(float: f32) -> Self {
-        let mut bits = float as u8;
-
-        if (bits & Self::K1) > 0 {
-            assert!((bits & Self::M1) > 0);
-            bits -= Self::M1;
-        }
-
-        if (bits & Self::K2) > 0 {
-            assert!((bits & Self::M2) > 0);
-            bits -= Self::M2;
-        }
-
-        Self(bits)
-    }
-
-    fn m1(self) -> bool {
-        (self.0 & Self::M1) > 0
-    }
-
-    fn m2(self) -> bool {
-        (self.0 & Self::M2) > 0
-    }
-
-    fn k1(self) -> bool {
-        (self.0 & Self::K1) > 0
-    }
-
-    fn k2(self) -> bool {
-        (self.0 & Self::K2) > 0
-    }
 }
