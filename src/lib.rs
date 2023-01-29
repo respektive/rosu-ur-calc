@@ -168,7 +168,11 @@ pub fn calculate_ur(map: &Beatmap, replay: &Replay) -> f64 {
 
         let replay_data_iter = iter::once(Buttons::default())
             .chain(replay_data.iter().map(|frame| frame.keys))
-            .zip(replay_data.iter());
+            .zip(replay_data.iter())
+            .filter(|(_, frame)| {
+                !(frame.timestamp < obj.start_time - hit_window_50
+                    || used_frames.contains(&frame.timestamp.to_bits()))
+            });
 
         for (prev_frame_keys, frame) in replay_data_iter {
             let latest_hit = match obj.is_slider() {
@@ -176,11 +180,7 @@ pub fn calculate_ur(map: &Beatmap, replay: &Replay) -> f64 {
                 true => (obj.start_time + hit_window_50).min(obj.end_time().round()),
             };
 
-            if frame.timestamp < obj.start_time - hit_window_50
-                || used_frames.contains(&frame.timestamp.to_bits())
-            {
-                continue;
-            } else if frame.timestamp > latest_hit {
+            if frame.timestamp > latest_hit {
                 break;
             }
 
