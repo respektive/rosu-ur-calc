@@ -1,7 +1,7 @@
 use std::{collections::HashSet, iter};
 
 use osu_db::{Mod, Replay};
-use rosu_pp::{Beatmap, BeatmapExt};
+use rosu_pp::{osu::OsuObject, Beatmap, BeatmapExt};
 
 use self::models::{Buttons, ReplayData};
 
@@ -197,29 +197,17 @@ pub fn calculate_ur(map: &Beatmap, replay: &Replay) -> f64 {
                 .skip(start_idx)
                 // filter out frames that are not hits
                 .filter_map(|(prev_frame_keys, frame)| {
-                    let in_circle = (frame.x - obj.stacked_pos().x)
-                        * (frame.x - obj.stacked_pos().x)
-                        + (frame.y - obj.stacked_pos().y) * (frame.y - obj.stacked_pos().y)
-                        < radius_sq;
-
-                    let m1 = frame.keys.m1() && !prev_frame_keys.m1();
-                    let m2 = frame.keys.m2() && !prev_frame_keys.m2();
-                    let k1 = frame.keys.k1() && !prev_frame_keys.k1();
-                    let k2 = frame.keys.k2() && !prev_frame_keys.k2();
-                    let press = m1 || m2 || k1 || k2;
+                    let in_circle = is_in_circle(frame, obj, radius_sq);
+                    let press = is_press(frame.keys, prev_frame_keys);
 
                     let notelock = prev.map_or(false, |prev| {
                         let mut notelock =
                             !*prev_hit && frame.timestamp < prev.start_time + hit_window_50;
 
                         if prev.is_slider() {
-                            let in_prev_cirle = (frame.x - prev.stacked_pos().x)
-                                * (frame.x - prev.stacked_pos().x)
-                                + (frame.y - prev.stacked_pos().y)
-                                    * (frame.y - prev.stacked_pos().y)
-                                < radius_sq;
+                            let in_prev_circle = is_in_circle(frame, prev, radius_sq);
                             let sliderlock =
-                                press && in_prev_cirle && frame.timestamp < prev.end_time();
+                                press && in_prev_circle && frame.timestamp < prev.end_time();
                             notelock |= sliderlock;
                         }
 
@@ -252,4 +240,18 @@ pub fn calculate_ur(map: &Beatmap, replay: &Replay) -> f64 {
     variance /= len;
 
     variance.sqrt() * 10.0
+}
+
+fn is_in_circle(frame: &ReplayData, obj: &OsuObject, radius_sq: f32) -> bool {
+    (frame.x - obj.stacked_pos().x) * (frame.x - obj.stacked_pos().x)
+        + (frame.y - obj.stacked_pos().y) * (frame.y - obj.stacked_pos().y)
+        < radius_sq
+}
+
+fn is_press(curr_keys: Buttons, prev_keys: Buttons) -> bool {
+    let m1 = curr_keys.m1() && !prev_keys.m1();
+    let m2 = curr_keys.m2() && !prev_keys.m2();
+    let k1 = curr_keys.k1() && !prev_keys.k1();
+    let k2 = curr_keys.k2() && !prev_keys.k2();
+    m1 || m2 || k1 || k2
 }
