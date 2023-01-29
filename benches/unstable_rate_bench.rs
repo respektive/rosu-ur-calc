@@ -5,7 +5,7 @@ use criterion::{
 };
 use osu_db::Replay;
 use rosu_pp::Beatmap;
-use rosu_ur_calc::calculate_ur;
+use rosu_ur_calc::{calculate_ur, calculate_ur_baseline};
 
 pub fn unstable_rate_bench(c: &mut Criterion) {
     let map_file = "Ayase Rie - Yuima-ruWorld TVver. (Fycho) [Extra]";
@@ -32,10 +32,17 @@ fn new_group<'c>(
 ) -> BenchmarkGroup<'c, WallTime> {
     let (map, replay) = parse_map_replay(map_file, replay_file);
     let mut group = c.benchmark_group(name);
+    group.sample_size(50);
 
-    group.bench_with_input("baseline", &(map, replay), |b, (map, replay)| {
-        b.iter(|| calculate_ur(black_box(map), black_box(replay)))
+    group.bench_with_input("baseline", &(&map, &replay), |b, &(map, replay)| {
+        b.iter(|| calculate_ur_baseline(black_box(map), black_box(replay)))
     });
+
+    group.bench_with_input(
+        "optimize candidate",
+        &(&map, &replay),
+        |b, (map, replay)| b.iter(|| calculate_ur(black_box(map), black_box(replay))),
+    );
 
     group
 }
