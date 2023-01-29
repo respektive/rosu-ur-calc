@@ -166,7 +166,7 @@ pub fn calculate_ur(map: &Beatmap, replay: &Replay) -> f64 {
     for (prev, obj) in hit_objects_iter {
         let mut hit = false;
 
-        let replay_data_iter = iter::once(Buttons::default())
+        let frame = iter::once(Buttons::default())
             .chain(replay_data.iter().map(|frame| frame.keys))
             .zip(replay_data.iter())
             .filter(|(_, frame)| {
@@ -180,40 +180,42 @@ pub fn calculate_ur(map: &Beatmap, replay: &Replay) -> f64 {
                 };
 
                 frame.timestamp <= latest_hit
+            })
+            .find_map(|(prev_frame_keys, frame)| {
+                let in_circle = (frame.x - obj.stacked_pos().x) * (frame.x - obj.stacked_pos().x)
+                    + (frame.y - obj.stacked_pos().y) * (frame.y - obj.stacked_pos().y)
+                    < (radius * radius);
+
+                let m1 = frame.keys.m1() && !prev_frame_keys.m1();
+                let m2 = frame.keys.m2() && !prev_frame_keys.m2();
+                let k1 = frame.keys.k1() && !prev_frame_keys.k1();
+                let k2 = frame.keys.k2() && !prev_frame_keys.k2();
+                let press = m1 || m2 || k1 || k2;
+
+                let notelock = prev.map_or(false, |prev| {
+                    let mut notelock =
+                        !prev_hit && frame.timestamp < prev.start_time + hit_window_50;
+
+                    if prev.is_slider() {
+                        let in_prev_cirle = (frame.x - prev.stacked_pos().x)
+                            * (frame.x - prev.stacked_pos().x)
+                            + (frame.y - prev.stacked_pos().y) * (frame.y - prev.stacked_pos().y)
+                            < (radius * radius);
+                        let sliderlock =
+                            press && in_prev_cirle && frame.timestamp < prev.end_time();
+                        notelock = notelock || sliderlock;
+                    }
+
+                    notelock
+                });
+
+                (in_circle && press && !notelock).then_some(frame)
             });
 
-        for (prev_frame_keys, frame) in replay_data_iter {
-            let in_circle = (frame.x - obj.stacked_pos().x) * (frame.x - obj.stacked_pos().x)
-                + (frame.y - obj.stacked_pos().y) * (frame.y - obj.stacked_pos().y)
-                < (radius * radius);
-
-            let m1 = frame.keys.m1() && !prev_frame_keys.m1();
-            let m2 = frame.keys.m2() && !prev_frame_keys.m2();
-            let k1 = frame.keys.k1() && !prev_frame_keys.k1();
-            let k2 = frame.keys.k2() && !prev_frame_keys.k2();
-            let press = m1 || m2 || k1 || k2;
-
-            let mut notelock = false;
-
-            if let Some(prev) = prev {
-                notelock = !prev_hit && frame.timestamp < prev.start_time + hit_window_50;
-
-                if prev.is_slider() {
-                    let in_prev_cirle = (frame.x - prev.stacked_pos().x)
-                        * (frame.x - prev.stacked_pos().x)
-                        + (frame.y - prev.stacked_pos().y) * (frame.y - prev.stacked_pos().y)
-                        < (radius * radius);
-                    let sliderlock = press && in_prev_cirle && frame.timestamp < prev.end_time();
-                    notelock = notelock || sliderlock;
-                }
-            }
-
-            if in_circle && press && !notelock {
-                hit_errors.push(frame.timestamp - obj.start_time);
-                used_frames.insert(frame.timestamp.to_bits());
-                hit = true;
-                break;
-            }
+        if let Some(frame) = frame {
+            hit_errors.push(frame.timestamp - obj.start_time);
+            used_frames.insert(frame.timestamp.to_bits());
+            hit = true;
         }
 
         prev_hit = hit;
