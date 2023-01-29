@@ -166,10 +166,15 @@ pub fn calculate_ur(map: &Beatmap, replay: &Replay) -> f64 {
     let hit_objects = map.osu_hitobjects(mods);
     let mut used_frames: HashSet<u64> = HashSet::with_capacity(hit_objects.len());
 
+    // the first object has no predecessor
     let hit_errors: Vec<_> = iter::once(None)
+        // followed by the hitobjects
         .chain(hit_objects.iter().map(Some))
+        // zip each object with its predecessor
         .zip(hit_objects.iter())
+        // filter out spinners
         .filter(|(_, h)| !h.is_spinner())
+        // for each object, try to find its hit frame
         .scan(false, |prev_hit, (prev, obj)| {
             let latest_hit = match obj.is_slider() {
                 false => obj.start_time + hit_window_50,
@@ -188,9 +193,10 @@ pub fn calculate_ur(map: &Beatmap, replay: &Replay) -> f64 {
                 .chain(frames.iter().map(|frame| frame.keys))
                 // zip keys with successing frame
                 .zip(frames)
+                // skip frames that are before the object's hit window
                 .skip(start_idx)
+                // filter out frames that are not hits
                 .filter_map(|(prev_frame_keys, frame)| {
-                    // filter out frames that are not hits
                     let in_circle = (frame.x - obj.stacked_pos().x)
                         * (frame.x - obj.stacked_pos().x)
                         + (frame.y - obj.stacked_pos().y) * (frame.y - obj.stacked_pos().y)
@@ -222,6 +228,7 @@ pub fn calculate_ur(map: &Beatmap, replay: &Replay) -> f64 {
 
                     (in_circle && press && !notelock).then_some(frame)
                 })
+                // take the first frame who's timestamp wasn't used for a previous object
                 .find(|frame| used_frames.insert(frame.timestamp.to_bits()))
                 .map(|frame| frame.timestamp - obj.start_time);
 
