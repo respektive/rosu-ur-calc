@@ -1,3 +1,5 @@
+use std::fmt::{Debug, Formatter, Result as FmtResult};
+
 #[derive(Debug)]
 pub struct ReplayData {
     pub timestamp: f64,
@@ -6,7 +8,7 @@ pub struct ReplayData {
     pub keys: Buttons,
 }
 
-#[derive(Debug, Default, Copy, Clone)]
+#[derive(Copy, Clone, Default)]
 pub struct Buttons(u8);
 
 impl Buttons {
@@ -19,13 +21,11 @@ impl Buttons {
         let mut bits = float as u8;
 
         if (bits & Self::K1) > 0 {
-            assert!((bits & Self::M1) > 0);
-            bits -= Self::M1;
+            bits &= !Self::M1;
         }
 
         if (bits & Self::K2) > 0 {
-            assert!((bits & Self::M2) > 0);
-            bits -= Self::M2;
+            bits &= !Self::M2;
         }
 
         Self(bits)
@@ -45,5 +45,11 @@ impl Buttons {
 
     pub fn k2(self) -> bool {
         (self.0 & Self::K2) > 0
+    }
+}
+
+impl Debug for Buttons {
+    fn fmt(&self, f: &mut Formatter<'_>) -> FmtResult {
+        Debug::fmt(&self.0, f)
     }
 }
