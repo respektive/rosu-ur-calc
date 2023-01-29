@@ -175,11 +175,8 @@ pub fn calculate_ur(map: &Beatmap, replay: &Replay) -> f64 {
             let hit_error = iter::once(Buttons::default()) // start with no keys
                 .chain(replay_data.iter().map(|frame| frame.keys)) // followed by frame keys
                 .zip(replay_data.iter()) // zip keys with successing frame
-                .filter(|(_, frame)| {
-                    // only consider frame within 50s hitwindow
-                    !(frame.timestamp < obj.start_time - hit_window_50
-                        || used_frames.contains(&frame.timestamp.to_bits()))
-                })
+                .skip_while(|(_, frame)| frame.timestamp < obj.start_time - hit_window_50)
+                .filter(|(_, frame)| !used_frames.contains(&frame.timestamp.to_bits()))
                 .take_while(|(_, frame)| {
                     // take until hitwindow no longer attainable
                     let latest_hit = match obj.is_slider() {
