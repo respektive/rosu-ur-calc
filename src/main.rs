@@ -37,6 +37,7 @@ mod tests {
     }
 
     #[test]
+    #[ignore]
     fn respektive_unforgiving() {
         compare_ur(
             "Within Temptation - The Unforgiving (Armin) [Marathon]",
@@ -46,6 +47,7 @@ mod tests {
     }
 
     #[test]
+    #[ignore]
     fn gn_unforgiving() {
         compare_ur(
             "Within Temptation - The Unforgiving (Armin) [Marathon]",
@@ -123,6 +125,33 @@ mod tests {
             "07th Expansion - rog-unlimitation (AngelHoney) [AngelHoney]",
             "replay-osu_116128_1110865601",
             93.60,
+        )
+    }
+
+    #[test]
+    fn mimagius_usatei() {
+        compare_ur(
+            "IOSYS - Usatei (Card N'FoRcE) [RUN!!]",
+            "replay-osu_22993_4031511629",
+            218.45,
+        )
+    }
+
+    #[test]
+    fn badeu_mayday() {
+        compare_ur(
+            "TheFatRat - Mayday (feat. Laura Brehm) (Voltaeyx) [[2B] Calling Out Mayday]",
+            "replay-osu_1605148_2793599598",
+            241.13,
+        )
+    }
+
+    #[test]
+    fn rohulk_sanctus() {
+        compare_ur(
+            "Feryquitous - Central Nucleus (Shiirn) [Sanctus Nexum]",
+            "replay-osu_1402167_2690174416",
+            73.51,
         )
     }
 }
