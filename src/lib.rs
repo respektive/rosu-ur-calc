@@ -127,21 +127,31 @@ pub fn calculate_ur(map: &Beatmap, replay: &Replay) -> f64 {
         .without(Mod::Nightcore)
         .bits();
 
+    // https://github.com/ppy/osu/blob/master/osu.Game/Scoring/Legacy/LegacyScoreDecoder.cs#L263-L307
     let replay_data: Vec<_> = replay
         .replay_data
         .as_ref()
         .unwrap()
         .iter()
-        .scan(0, |time_elapsed, action| {
+        .enumerate()
+        .filter(|(_, action)| action.delta != -12345)
+        .scan(0, |time_elapsed, (i, action)| {
             *time_elapsed += action.delta;
 
-            Some(ReplayData {
+            let skip = i < 2
+                && (action.x - 256.0).abs() <= f32::EPSILON
+                && (action.y - 500.0).abs() <= f32::EPSILON;
+
+            let frame = (!skip && action.delta >= 0).then_some(ReplayData {
                 timestamp: *time_elapsed as f64,
                 x: action.x,
                 y: action.y,
                 keys: Buttons::from_f32(action.z),
-            })
+            });
+
+            Some(frame)
         })
+        .flatten()
         .collect();
 
     let attrs = map.attributes().mods(mods).build();
