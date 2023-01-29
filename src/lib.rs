@@ -181,9 +181,12 @@ pub fn calculate_ur(map: &Beatmap, replay: &Replay) -> f64 {
             let end_idx = replay_data.partition_point(|frame| frame.timestamp <= latest_hit);
             let frames = &replay_data[..end_idx];
 
-            let hit_error = iter::once(Buttons::default()) // start with no keys
-                .chain(frames.iter().map(|frame| frame.keys)) // followed by frame keys
-                .zip(frames) // zip keys with successing frame
+            // start with no keys
+            let hit_error = iter::once(Buttons::default())
+                // followed by frame keys
+                .chain(frames.iter().map(|frame| frame.keys))
+                // zip keys with successing frame
+                .zip(frames)
                 .skip_while(|(_, frame)| frame.timestamp < obj.start_time - hit_window_50)
                 .filter_map(|(prev_frame_keys, frame)| {
                     // filter out frames that are not hits
