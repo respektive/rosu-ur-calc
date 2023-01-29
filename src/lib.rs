@@ -163,9 +163,8 @@ pub fn calculate_ur(map: &Beatmap, replay: &Replay) -> f64 {
     let hit_window_50 = 199.5 - attrs.od * 10.0;
     //let hit_window_50 = (150.0 + 50.0 * (5.0 - attrs.od) / 5.0) - 0.5;
 
-    let mut used_frames: HashSet<u64> = HashSet::new();
-
     let hit_objects = map.osu_hitobjects(mods);
+    let mut used_frames: HashSet<u64> = HashSet::with_capacity(hit_objects.len());
 
     let hit_errors: Vec<_> = iter::once(None)
         .chain(hit_objects.iter().map(Some))
