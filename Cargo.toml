@@ -7,4 +7,4 @@ edition = "2021"
 
 [dependencies]
 osu-db = "0.3.0"
-rosu-pp = { git = "https://github.com/MaxOhn/rosu-pp", branch = "expose-mode-objects" }
+rosu-pp = "0.9.3"

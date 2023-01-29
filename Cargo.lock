@@ -262,8 +262,9 @@ dependencies = [
 
 [[package]]
 name = "rosu-pp"
-version = "0.9.2"
-source = "git+https://github.com/MaxOhn/rosu-pp?branch=expose-mode-objects#6ec354f7f96a1c72c178219e315d792e748c0e07"
+version = "0.9.3"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "798ddfd34a73918c234251d8a4ba163a08041ca29d39910d5cd28826529eaab8"
 
 [[package]]
 name = "rosu-ur-calc"
