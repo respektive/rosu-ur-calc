@@ -89,4 +89,22 @@ mod tests {
             222.60,
         )
     }
+
+    #[test]
+    fn mrekk_demetori() {
+        compare_ur(
+            "Demetori - Shinkou wa Hakanaki Ningen no Tame ni ~ Jehovah's YaHVeH (Camo) [Camo & Winter's Extra Stage]",
+            "replay-osu_3747453_4300226983",
+            78.57,
+        )
+    }
+
+    #[test]
+    fn gn_barusa() {
+        compare_ur(
+            "Nico Nico Douga - BARUSA of MIKOSU (DJPop) [TAG4]",
+            "replay-osu_24722_3095061139",
+            204.31,
+        )
+    }
 }
