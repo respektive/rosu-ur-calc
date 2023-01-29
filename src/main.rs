@@ -7,19 +7,27 @@ fn main() {
     let map_path = args[1].to_string();
     let replay_path = args[2].to_string();
 
-    let map = match Beatmap::from_path(map_path) {
-        Ok(map) => map,
-        Err(why) => panic!("Error while parsing map: {}", why),
-    };
-
+    let map = Beatmap::from_path(map_path).unwrap();
     let replay = Replay::from_file(replay_path).unwrap();
 
-    let mods = replay.mods.without(osu_db::Mod::DoubleTime).without(osu_db::Mod::HalfTime).without(osu_db::Mod::Nightcore).bits();
+    let unstable_rate = calculate_ur(&map, &replay);
+
+    println!("UR: {unstable_rate:#?}");
+}
+
+fn calculate_ur(map: &Beatmap, replay: &Replay) -> f64 {
+    let mods = replay
+        .mods
+        .without(osu_db::Mod::DoubleTime)
+        .without(osu_db::Mod::HalfTime)
+        .without(osu_db::Mod::Nightcore)
+        .bits();
 
     let replay_data: Vec<_> = replay
         .replay_data
+        .as_ref()
         .unwrap()
-        .into_iter()
+        .iter()
         .scan(0, |time_elapsed, action| {
             *time_elapsed += action.delta;
 
@@ -60,7 +68,7 @@ fn main() {
                 false => obj.start_time + hit_window_50,
                 true => (obj.start_time + hit_window_50).min(obj.end_time().round()),
             };
-            
+
             if frame.timestamp < obj.start_time - hit_window_50
                 || used_frames.contains(&frame.timestamp.to_bits())
             {
@@ -81,8 +89,8 @@ fn main() {
 
             let mut notelock = false;
             if i > 0 {
-                notelock = !prev_hit
-                    && frame.timestamp < hit_objects[i - 1].start_time + hit_window_50;
+                notelock =
+                    !prev_hit && frame.timestamp < hit_objects[i - 1].start_time + hit_window_50;
 
                 if hit_objects[i - 1].is_slider() {
                     let in_prev_cirle = (frame.x - hit_objects[i - 1].stacked_pos().x)
@@ -90,9 +98,8 @@ fn main() {
                         + (frame.y - hit_objects[i - 1].stacked_pos().y)
                             * (frame.y - hit_objects[i - 1].stacked_pos().y)
                         < (radius * radius);
-                    let sliderlock = press
-                        && in_prev_cirle
-                        && frame.timestamp < hit_objects[i - 1].end_time();
+                    let sliderlock =
+                        press && in_prev_cirle && frame.timestamp < hit_objects[i - 1].end_time();
                     notelock = notelock || sliderlock;
                 }
             }
@@ -116,9 +123,8 @@ fn main() {
         variance += (hit - avg) * (hit - avg);
     }
     variance /= len;
-    let unstable_rate = variance.sqrt() * 10.0;
 
-    println!("UR: {:#?}", unstable_rate);
+    variance.sqrt() * 10.0
 }
 
 #[derive(Debug)]
