@@ -172,18 +172,17 @@ pub fn calculate_ur(map: &Beatmap, replay: &Replay) -> f64 {
             .filter(|(_, frame)| {
                 !(frame.timestamp < obj.start_time - hit_window_50
                     || used_frames.contains(&frame.timestamp.to_bits()))
+            })
+            .take_while(|(_, frame)| {
+                let latest_hit = match obj.is_slider() {
+                    false => obj.start_time + hit_window_50,
+                    true => (obj.start_time + hit_window_50).min(obj.end_time().round()),
+                };
+
+                frame.timestamp <= latest_hit
             });
 
         for (prev_frame_keys, frame) in replay_data_iter {
-            let latest_hit = match obj.is_slider() {
-                false => obj.start_time + hit_window_50,
-                true => (obj.start_time + hit_window_50).min(obj.end_time().round()),
-            };
-
-            if frame.timestamp > latest_hit {
-                break;
-            }
-
             let in_circle = (frame.x - obj.stacked_pos().x) * (frame.x - obj.stacked_pos().x)
                 + (frame.y - obj.stacked_pos().y) * (frame.y - obj.stacked_pos().y)
                 < (radius * radius);
