@@ -162,7 +162,7 @@ pub fn calculate_ur(map: &Beatmap, replay: &Replay) -> f64 {
         .zip(hit_objects.iter())
         .filter(|(_, h)| !h.is_spinner())
         .scan(false, |prev_hit, (prev, obj)| {
-            let frame = iter::once(Buttons::default())
+            let hit_error = iter::once(Buttons::default())
                 .chain(replay_data.iter().map(|frame| frame.keys))
                 .zip(replay_data.iter())
                 .filter(|(_, frame)| {
@@ -207,14 +207,13 @@ pub fn calculate_ur(map: &Beatmap, replay: &Replay) -> f64 {
                         notelock
                     });
 
-                    (in_circle && press && !notelock).then_some(frame)
+                    (in_circle && press && !notelock).then_some(frame.timestamp)
+                })
+                .map(|frame_timestamp| {
+                    used_frames.insert(frame_timestamp.to_bits());
+
+                    frame_timestamp - obj.start_time
                 });
-
-            let hit_error = frame.map(|frame| {
-                used_frames.insert(frame.timestamp.to_bits());
-
-                frame.timestamp - obj.start_time
-            });
 
             *prev_hit = hit_error.is_some();
 
