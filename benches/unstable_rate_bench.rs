@@ -32,7 +32,6 @@ fn new_group<'c>(
 ) -> BenchmarkGroup<'c, WallTime> {
     let (map, replay) = parse_map_replay(map_file, replay_file);
     let mut group = c.benchmark_group(name);
-    group.sample_size(50);
 
     group.bench_with_input("baseline", &(&map, &replay), |b, &(map, replay)| {
         b.iter(|| calculate_ur_baseline(black_box(map), black_box(replay)))
