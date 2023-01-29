@@ -1,8 +1,6 @@
 use std::hint::black_box;
 
-use criterion::{
-    criterion_group, criterion_main, measurement::WallTime, BenchmarkGroup, Criterion,
-};
+use criterion::{criterion_group, criterion_main, Criterion};
 use osu_db::Replay;
 use rosu_pp::Beatmap;
 use rosu_ur_calc::{calculate_ur, calculate_ur_baseline};
@@ -10,26 +8,18 @@ use rosu_ur_calc::{calculate_ur, calculate_ur_baseline};
 pub fn unstable_rate_bench(c: &mut Criterion) {
     let map_file = "Ayase Rie - Yuima-ruWorld TVver. (Fycho) [Extra]";
     let replay_file = "replay-osu_983680_2294262584";
-    let respektive_haitai = new_group(c, "respektive haitai", map_file, replay_file);
-    respektive_haitai.finish();
+    new_group(c, "respektive haitai", map_file, replay_file);
 
     let map_file = "sphere - HIGH POWERED (TV Size) (Azunyan-) [POWER OVERLOAD EXPERT]";
     let replay_file = "replay-osu_2779503_3916842208";
-    let respektive_high_powered = new_group(c, "respektive high powered", map_file, replay_file);
-    respektive_high_powered.finish();
+    new_group(c, "respektive high powered", map_file, replay_file);
 
     let map_file = "Euchaeta - Who's World (P_O) [Who Does This World Belong To]";
     let replay_file = "replay-osu_3312004_4205640222";
-    let respektive_whos_world = new_group(c, "respektive whos world", map_file, replay_file);
-    respektive_whos_world.finish();
+    new_group(c, "respektive whos world", map_file, replay_file);
 }
 
-fn new_group<'c>(
-    c: &'c mut Criterion,
-    name: &str,
-    map_file: &str,
-    replay_file: &str,
-) -> BenchmarkGroup<'c, WallTime> {
+fn new_group(c: &mut Criterion, name: &str, map_file: &str, replay_file: &str) {
     let (map, replay) = parse_map_replay(map_file, replay_file);
     let mut group = c.benchmark_group(name);
 
@@ -43,7 +33,7 @@ fn new_group<'c>(
         |b, (map, replay)| b.iter(|| calculate_ur(black_box(map), black_box(replay))),
     );
 
-    group
+    group.finish();
 }
 
 fn parse_map_replay(map_file: &str, replay_file: &str) -> (Beatmap, Replay) {
