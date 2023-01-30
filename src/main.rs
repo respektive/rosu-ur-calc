@@ -163,4 +163,22 @@ mod tests {
             150.93,
         )
     }
+
+    #[test]
+    fn whitecat_flamewall() {
+        compare_ur(
+            "Camellia - Flamewall (Sotarks) [ETERNAL SACRED FIRE]",
+            "replay-osu_3135149_4285493342",
+            112.92,
+        )
+    }
+
+    #[test]
+    fn respektive_sink() {
+        compare_ur(
+            "Chroma - sink to the deep sea world (None1637) [AR10]",
+            "replay-osu_1636879_3357413950",
+            252.50,
+        )
+    }
 }
