@@ -11,10 +11,11 @@ pub struct HitObjectManager<'h> {
     pub radius_sq: f32,
     minimal_start: usize,
     minimal_end: usize,
-    hit_objects: Vec<HitObject<'h>>,
+    pub hit_objects: Vec<HitObject<'h>>, // TODO: remove pub
 }
 
 impl HitObjectManager<'_> {
+    pub const HITTABLE_RANGE: i32 = 400;
     pub const FADE_IN: i32 = 400;
     pub const FADE_OUT: i32 = 240;
 }
@@ -64,6 +65,15 @@ impl<'h> HitObjectManager<'h> {
     }
 
     pub fn find_circle_at(&self, frame: &HitFrame) -> Option<(usize, &HitObject<'h>)> {
+        /*
+            Vector2 v = new Vector2(x, y);
+
+            foreach (HitObject h in hitObjectsMinimal)
+                if ((!checkScorable || h.IsScorable) && h.HitTest(v, hittableRangeOnly, radius))
+                    return h;
+            return null;
+        */
+
         self.hit_objects_minimal()
             .iter()
             .enumerate()
@@ -71,7 +81,7 @@ impl<'h> HitObjectManager<'h> {
     }
 
     pub fn hit(&mut self, index: usize) {
-        self.hit_objects[index].is_hit = true;
+        self.hit_objects[self.minimal_start + index].hit()
     }
 }
 

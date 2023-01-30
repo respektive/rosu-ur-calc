@@ -1,7 +1,5 @@
 use super::{frames::HitFrame, hit_object::HitObject, hit_object_manager::HitObjectManager};
 
-const HITTABLE_RANGE: i32 = 400;
-
 pub struct Ruleset;
 
 impl Ruleset {
@@ -11,6 +9,19 @@ impl Ruleset {
         frame: &HitFrame,
         manager: &HitObjectManager<'_>,
     ) -> ClickAction {
+        /*
+            if (h.IsType(HitObjectType.Normal))
+            {
+                //check stack - ignore clicks on circles lower in stack.
+                int index = hitObjectManager.hitObjectsMinimal.IndexOf(h);
+
+                if (index > 0 && hitObjectManager.hitObjectsMinimal[index - 1].StackCount > 0 &&
+                    hitObjectManager.hitObjectsMinimal[index - 1].IsVisible &&
+                    !hitObjectManager.hitObjectsMinimal[index - 1].IsHit)
+                    return ClickAction.Ignore;
+            }
+        */
+
         if h.is_normal() && index > 0 {
             let prev = &manager.hit_objects_minimal()[index - 1];
 
@@ -18,6 +29,18 @@ impl Ruleset {
                 return ClickAction::Ignore;
             }
         }
+
+        /*
+            bool isNextCircle = true;
+            foreach (HitObject t in hitObjectManager.hitObjectsMinimal)
+            {
+                if (t.StartTime + hitObjectManager.HitWindow50 <= AudioEngine.Time || t.IsHit) continue;
+
+                if (t.StartTime < h.StartTime && t != h)
+                    isNextCircle = false;
+                break;
+            }
+        */
 
         let mut is_next_circle = true;
 
@@ -33,7 +56,15 @@ impl Ruleset {
             break;
         }
 
-        if is_next_circle && (h.start_time() - frame.time).abs() < HITTABLE_RANGE {
+        /*
+            int apLeniency = Player.Relaxing2 ? 200 : 0;
+            return (isNextCircle && Math.Abs(h.StartTime - AudioEngine.Time) < HitObjectManager.HITTABLE_RANGE - apLeniency)
+                       ? ClickAction.Hit
+                       : ClickAction.Shake;
+        */
+
+        if is_next_circle && (h.start_time() - frame.time).abs() < HitObjectManager::HITTABLE_RANGE
+        {
             ClickAction::Hit
         } else {
             ClickAction::Shake

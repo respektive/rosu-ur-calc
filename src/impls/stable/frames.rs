@@ -1,4 +1,7 @@
-use std::mem;
+use std::{
+    fmt::{Debug, Formatter, Result as FmtResult},
+    mem,
+};
 
 use osu_db::Replay;
 use rosu_pp::parse::Pos2;
@@ -54,7 +57,7 @@ pub struct HitFrame {
     pub pos: Pos,
 }
 
-#[derive(Copy, Clone, Debug)]
+#[derive(Copy, Clone)]
 pub struct Pos {
     x: f32,
     y: f32,
@@ -63,5 +66,11 @@ pub struct Pos {
 impl Pos {
     pub fn dist_sq(&self, other: Pos2) -> f32 {
         (self.x - other.x) * (self.x - other.x) + (self.y - other.y) * (self.y - other.y)
+    }
+}
+
+impl Debug for Pos {
+    fn fmt(&self, f: &mut Formatter<'_>) -> FmtResult {
+        write!(f, "({}, {})", self.x, self.y)
     }
 }

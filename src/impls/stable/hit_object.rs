@@ -15,20 +15,31 @@ pub struct HitObject<'h> {
 impl Debug for HitObject<'_> {
     fn fmt(&self, f: &mut Formatter<'_>) -> FmtResult {
         #[derive(Debug)]
+        enum HitObjectKind {
+            Circle,
+            Slider,
+            Spinner,
+        }
+
+        #[derive(Debug)]
         #[allow(unused)]
         struct HitObject {
-            start_time: i32,
+            time: i32,
             pos: Pos2,
-            is_normal: bool,
-            is_slider: bool,
+            kind: HitObjectKind,
             is_hit: bool,
         }
 
         let h = HitObject {
-            start_time: self.h.start_time(),
+            time: self.h.start_time(),
             pos: self.h.pos(),
-            is_normal: self.h.is_normal(),
-            is_slider: self.h.is_slider(),
+            kind: if self.h.is_normal() {
+                HitObjectKind::Circle
+            } else if self.h.is_slider() {
+                HitObjectKind::Slider
+            } else {
+                HitObjectKind::Spinner
+            },
             is_hit: self.is_hit,
         };
 
@@ -40,14 +51,33 @@ impl<'h> HitObject<'h> {
     pub fn new(h: &'h dyn HitObjectExt) -> Self {
         Self { h, is_hit: false }
     }
+
+    pub fn hit(&mut self) {
+        self.is_hit = true;
+    }
 }
 
 impl HitObject<'_> {
     pub fn hit_test(&self, frame: &HitFrame, manager: &HitObjectManager<'_>) -> bool {
+        /*
+            return ((!hittableRangeOnly && IsVisible) ||
+                  (StartTime - hitObjectManager.PreEmpt <= AudioEngine.Time &&
+                   StartTime + hitObjectManager.HitWindow50 >= AudioEngine.Time && !IsHit)) &&
+                 (Vector2.DistanceSquared(testPosition, Position) <= radius * radius ||
+                  (!hittableRangeOnly &&
+                   Vector2.DistanceSquared(testPosition, Position2) <= radius * radius));
+
+            simplified:
+
+            return StartTime - hitObjectManager.PreEmpt <= AudioEngine.Time &&
+                   StartTime + hitObjectManager.HitWindow50 >= AudioEngine.Time && !IsHit &&
+                 Vector2.DistanceSquared(testPosition, Position) <= radius * radius;
+        */
+
         let matches_time = self.start_time() - manager.preempt <= frame.time
             && self.start_time() + manager.hit_window_50 >= frame.time;
 
-        let matches_pos = frame.pos.dist_sq(self.pos()) < manager.radius_sq;
+        let matches_pos = frame.pos.dist_sq(self.pos()) <= manager.radius_sq;
 
         matches_time && matches_pos && !self.is_hit
     }

@@ -34,11 +34,7 @@ pub fn calculate_ur(map: &Beatmap, replay: &Replay) -> f64 {
             continue;
         };
 
-        let action = Ruleset::check_click_action(h, i, frame, &manager);
-
-        // println!("frame: {frame:?}\nh: {h:?}\naction: {action:?}");
-
-        match action {
+        match Ruleset::check_click_action(h, i, frame, &manager) {
             ClickAction::Hit => {
                 if h.is_normal() {
                     let accuracy = (frame.time - h.start_time()).abs();
@@ -56,6 +52,20 @@ pub fn calculate_ur(map: &Beatmap, replay: &Replay) -> f64 {
             ClickAction::Ignore | ClickAction::Shake => {}
         }
     }
+
+    let mut no_hits = 0;
+
+    for h in manager.hit_objects.iter() {
+        if !h.is_hit && (h.is_normal() || h.is_slider()) {
+            no_hits += 1;
+        }
+    }
+
+    assert_eq!(
+        no_hits, replay.count_miss,
+        "expected {} miss(es), got {no_hits}",
+        replay.count_miss
+    );
 
     let stats = ErrorStatistics::new(&hit_errors);
 
