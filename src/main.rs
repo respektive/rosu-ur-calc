@@ -2,7 +2,7 @@ use std::env;
 
 use osu_db::Replay;
 use rosu_pp::Beatmap;
-use rosu_ur_calc::calculate_ur;
+use rosu_ur_calc::calculate_ur_baseline as calculate_ur;
 
 fn main() {
     let args: Vec<String> = env::args().collect();
@@ -152,6 +152,15 @@ mod tests {
             "Feryquitous - Central Nucleus (Shiirn) [Sanctus Nexum]",
             "replay-osu_1402167_2690174416",
             73.51,
+        )
+    }
+
+    #[test]
+    fn gn_strange() {
+        compare_ur(
+            "DJ Sharpnel - StrangeProgram (happy30) [Lesjuh's TAG]",
+            "replay-osu_27737_2170634214",
+            150.93,
         )
     }
 }

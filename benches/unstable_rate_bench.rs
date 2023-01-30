@@ -3,7 +3,7 @@ use std::hint::black_box;
 use criterion::{criterion_group, criterion_main, Criterion};
 use osu_db::Replay;
 use rosu_pp::Beatmap;
-use rosu_ur_calc::{calculate_ur, calculate_ur_baseline};
+use rosu_ur_calc::{calculate_ur_baseline, calculate_ur_iters};
 
 pub fn unstable_rate_bench(c: &mut Criterion) {
     let map_file = "Ayase Rie - Yuima-ruWorld TVver. (Fycho) [Extra]";
@@ -27,11 +27,9 @@ fn new_group(c: &mut Criterion, name: &str, map_file: &str, replay_file: &str) {
         b.iter(|| calculate_ur_baseline(black_box(map), black_box(replay)))
     });
 
-    group.bench_with_input(
-        "optimize candidate",
-        &(&map, &replay),
-        |b, (map, replay)| b.iter(|| calculate_ur(black_box(map), black_box(replay))),
-    );
+    group.bench_with_input("iters", &(&map, &replay), |b, (map, replay)| {
+        b.iter(|| calculate_ur_iters(black_box(map), black_box(replay)))
+    });
 
     group.finish();
 }

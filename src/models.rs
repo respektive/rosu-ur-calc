@@ -46,6 +46,15 @@ impl Buttons {
     pub fn k2(self) -> bool {
         (self.0 & Self::K2) > 0
     }
+
+    pub fn is_new_press(self, prev: Self) -> bool {
+        let m1 = self.m1() && !prev.m1();
+        let m2 = self.m2() && !prev.m2();
+        let k1 = self.k1() && !prev.k1();
+        let k2 = self.k2() && !prev.k2();
+
+        m1 || m2 || k1 || k2
+    }
 }
 
 impl Debug for Buttons {
