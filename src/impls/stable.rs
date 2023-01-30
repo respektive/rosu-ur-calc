@@ -198,9 +198,10 @@ fn hit_test(
         && h.start_time + hit_window_50 >= frame.time
         && !is_hit;
 
-    let matches_pos = (frame.x - h.pos.x) * (frame.x - h.pos.x)
-        + (frame.y - h.pos.y) * (frame.y - h.pos.y)
-        < radius_sq;
+    let pos = h.stacked_pos();
+
+    let matches_pos =
+        (frame.x - pos.x) * (frame.x - pos.x) + (frame.y - pos.y) * (frame.y - pos.y) < radius_sq;
 
     matches_time && matches_pos
 }
