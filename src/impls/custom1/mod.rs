@@ -32,7 +32,7 @@ pub fn calculate_ur(map: &Beatmap, replay: &Replay) -> f64 {
     let mut hit_errors = Vec::with_capacity(hit_objects.len());
 
     for frame in frames {
-        let time_start = frame.time - HIT_WINDOW_MISS;
+        let time_start = frame.time - hw_50;
         let time_end = frame.time + hw_50;
 
         let start_idx = hit_objects.partition_point(|h| h.start_time() < time_start);
