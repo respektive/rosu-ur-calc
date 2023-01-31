@@ -43,7 +43,9 @@ pub fn calculate_ur(map: &Beatmap, replay: &Replay) -> f64 {
         let h_opt = hit_objects[start_idx..end_idx]
             .iter()
             .zip(start_idx..)
-            .find(|(h, _)| !h.matched_frame && frame.pos.dist_sq(h.pos()) <= radius_sq);
+            .find(|(h, _)| {
+                !h.matched_frame && frame.pos.dist_sq(h.pos()) <= radius_sq && !h.ignore()
+            });
 
         let Some((h, i)) = h_opt else { continue };
 

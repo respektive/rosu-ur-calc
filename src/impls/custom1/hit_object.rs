@@ -32,6 +32,10 @@ impl HitObject<'_> {
         matches!(self.h.kind(), HitObjectKind::Slider)
     }
 
+    pub fn ignore(&self) -> bool {
+        self.h.ignore()
+    }
+
     /// If the note is a slider, return its endtime
     pub fn slider_end_time(&self) -> Option<i32> {
         self.h.slider_end_time()
@@ -50,6 +54,7 @@ pub trait HitObjectExt {
     fn slider_end_time(&self) -> Option<i32>;
     fn pos(&self) -> Pos2;
     fn kind(&self) -> HitObjectKind;
+    fn ignore(&self) -> bool;
 }
 
 impl HitObjectExt for OsuObject {
@@ -78,6 +83,11 @@ impl HitObjectExt for OsuObject {
             OsuObjectKind::Slider(_) => HitObjectKind::Slider,
             OsuObjectKind::Spinner { .. } => HitObjectKind::Spinner,
         }
+    }
+
+    #[inline]
+    fn ignore(&self) -> bool {
+        self.is_spinner()
     }
 }
 
