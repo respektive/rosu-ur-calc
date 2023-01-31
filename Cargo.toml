@@ -15,3 +15,11 @@ criterion = "0.4"
 [[bench]]
 name = "unstable_rate_bench"
 harness = false
+
+[features]
+default = []
+baseline = []
+iters = []
+stable = []
+circleguard = []
+custom1 = []

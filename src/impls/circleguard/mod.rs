@@ -1,3 +1,5 @@
+#![cfg_attr(not(feature = "circleguard"), allow(unused))]
+
 use osu_db::Replay;
 use rosu_pp::{osu::OsuObjectKind, Beatmap, BeatmapExt};
 

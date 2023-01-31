@@ -1,3 +1,5 @@
+#![cfg_attr(not(feature = "iters"), allow(unused))]
+
 use std::{collections::HashSet, iter};
 
 use osu_db::{Mod, Replay};

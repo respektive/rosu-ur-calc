@@ -1,3 +1,5 @@
+#![cfg_attr(not(feature = "stable"), allow(unused))]
+
 use osu_db::{Mod, Replay};
 use rosu_pp::{Beatmap, BeatmapExt};
 
