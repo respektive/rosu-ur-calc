@@ -1,5 +1,3 @@
-#![cfg_attr(not(feature = "iters"), allow(unused))]
-
 use std::{collections::HashSet, iter};
 
 use osu_db::{Mod, Replay};
@@ -7,6 +5,7 @@ use rosu_pp::{osu::OsuObject, Beatmap, BeatmapExt};
 
 use crate::models::{Buttons, ReplayData};
 
+#[cfg_attr(not(feature = "iters"), allow(unused))]
 pub fn calculate_ur(map: &Beatmap, replay: &Replay) -> f64 {
     let mods = replay
         .mods

@@ -1,5 +1,3 @@
-#![cfg_attr(not(feature = "custom1"), allow(unused))]
-
 use osu_db::Replay;
 use rosu_pp::{Beatmap, BeatmapExt};
 
@@ -9,6 +7,7 @@ mod error_stats;
 mod frames;
 mod hit_object;
 
+#[cfg_attr(not(feature = "custom1"), allow(unused))]
 pub fn calculate_ur(map: &Beatmap, replay: &Replay) -> f64 {
     let mods = replay.mods.bits() & !(NC | HT);
 
@@ -69,8 +68,6 @@ pub fn calculate_ur(map: &Beatmap, replay: &Replay) -> f64 {
 
     stats.unstable_rate
 }
-
-const HIT_WINDOW_MISS: i32 = 400;
 
 const EZ: u32 = 1 << 1;
 const HR: u32 = 1 << 4;

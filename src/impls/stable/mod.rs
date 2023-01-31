@@ -1,5 +1,3 @@
-#![cfg_attr(not(feature = "stable"), allow(unused))]
-
 use osu_db::{Mod, Replay};
 use rosu_pp::{Beatmap, BeatmapExt};
 
@@ -16,6 +14,7 @@ mod hit_object;
 mod hit_object_manager;
 mod ruleset;
 
+#[cfg_attr(not(feature = "stable"), allow(unused))]
 pub fn calculate_ur(map: &Beatmap, replay: &Replay) -> f64 {
     let mods = replay
         .mods

@@ -1,12 +1,7 @@
-use std::{
-    fmt::{Debug, Formatter, Result as FmtResult},
-    mem,
-};
+use std::fmt::{Debug, Formatter, Result as FmtResult};
 
 use osu_db::Replay;
 use rosu_pp::parse::Pos2;
-
-use crate::models::Buttons;
 
 pub struct HitFrames;
 

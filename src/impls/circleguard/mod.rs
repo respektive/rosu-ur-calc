@@ -1,5 +1,3 @@
-#![cfg_attr(not(feature = "circleguard"), allow(unused))]
-
 use osu_db::Replay;
 use rosu_pp::{osu::OsuObjectKind, Beatmap, BeatmapExt};
 
@@ -8,6 +6,7 @@ use self::{error_stats::ErrorStatistics, frames::HitFrames};
 mod error_stats;
 mod frames;
 
+#[cfg_attr(not(feature = "circleguard"), allow(unused))]
 pub fn calculate_ur(map: &Beatmap, replay: &Replay) -> f64 {
     let mods = replay.mods.bits() & !(NC | HT);
 
