@@ -3,8 +3,8 @@ use rosu_pp::Beatmap;
 use rosu_ur_calc::calculate_ur;
 
 fn compare_ur(map_file: &str, replay_file: &str, expected: f64) {
-    let map_path = format!("./test-data/{map_file}.osu");
-    let replay_path = format!("./test-data/{replay_file}.osr");
+    let map_path = format!("./test-data/maps/{map_file}.osu");
+    let replay_path = format!("./test-data/replays/{replay_file}.osr");
 
     let map = Beatmap::from_path(map_path).expect("failed to parse map");
     let replay = Replay::from_file(replay_path).expect("failed to parse replay");
@@ -22,7 +22,7 @@ fn compare_ur(map_file: &str, replay_file: &str, expected: f64) {
 fn respektive_unforgiving() {
     compare_ur(
         "Within Temptation - The Unforgiving (Armin) [Marathon]",
-        "replay-osu_156352_3460700148",
+        "respektive_unforgiving",
         130.37,
     )
 }
@@ -32,7 +32,7 @@ fn respektive_unforgiving() {
 fn gn_unforgiving() {
     compare_ur(
         "Within Temptation - The Unforgiving (Armin) [Marathon]",
-        "replay-osu_156352_3549163348",
+        "gn_unforgiving",
         135.48,
     )
 }
@@ -41,7 +41,7 @@ fn gn_unforgiving() {
 fn respektive_haitai() {
     compare_ur(
         "Ayase Rie - Yuima-ruWorld TVver. (Fycho) [Extra]",
-        "replay-osu_983680_2294262584",
+        "respektive_haitai",
         87.15,
     )
 }
@@ -50,7 +50,7 @@ fn respektive_haitai() {
 fn respektive_high_powered() {
     compare_ur(
         "sphere - HIGH POWERED (TV Size) (Azunyan-) [POWER OVERLOAD EXPERT]",
-        "replay-osu_2779503_3916842208",
+        "respektive_high_powered",
         90.80,
     )
 }
@@ -59,7 +59,7 @@ fn respektive_high_powered() {
 fn respektive_whos_world() {
     compare_ur(
         "Euchaeta - Who's World (P_O) [Who Does This World Belong To]",
-        "replay-osu_3312004_4205640222",
+        "respektive_whos_world",
         96.14,
     )
 }
@@ -68,7 +68,7 @@ fn respektive_whos_world() {
 fn wolf_gitaroo() {
     compare_ur(
         "Gitaroo Man - Soft Machine (Ash) [Master Mode]",
-        "replay-osu_21724_5259762",
+        "wolf_gitaroo",
         222.60,
     )
 }
@@ -77,7 +77,7 @@ fn wolf_gitaroo() {
 fn mrekk_demetori() {
     compare_ur(
             "Demetori - Shinkou wa Hakanaki Ningen no Tame ni ~ Jehovah's YaHVeH (Camo) [Camo & Winter's Extra Stage]",
-            "replay-osu_3747453_4300226983",
+            "mrekk_demetori",
             78.57,
         )
 }
@@ -86,7 +86,7 @@ fn mrekk_demetori() {
 fn gn_barusa() {
     compare_ur(
         "Nico Nico Douga - BARUSA of MIKOSU (DJPop) [TAG4]",
-        "replay-osu_24722_3095061139",
+        "gn_barusa",
         204.31,
     )
 }
@@ -95,7 +95,7 @@ fn gn_barusa() {
 fn ekoro_barusa() {
     compare_ur(
         "Nico Nico Douga - BARUSA of MIKOSU (DJPop) [TAG4]",
-        "replay-osu_24722_4355141481",
+        "ekoro_barusa",
         115.33,
     )
 }
@@ -104,16 +104,16 @@ fn ekoro_barusa() {
 fn peachick_rog() {
     compare_ur(
         "07th Expansion - rog-unlimitation (AngelHoney) [AngelHoney]",
-        "replay-osu_116128_1110865601",
+        "peachick_rog",
         93.60,
     )
 }
 
 #[test]
-fn mimagius_usatei() {
+fn mismagius_usatei() {
     compare_ur(
         "IOSYS - Usatei (Card N'FoRcE) [RUN!!]",
-        "replay-osu_22993_4031511629",
+        "mismagius_usatei",
         218.45,
     )
 }
@@ -122,7 +122,7 @@ fn mimagius_usatei() {
 fn badeu_mayday() {
     compare_ur(
         "TheFatRat - Mayday (feat. Laura Brehm) (Voltaeyx) [[2B] Calling Out Mayday]",
-        "replay-osu_1605148_2793599598",
+        "badeu_mayday",
         241.13,
     )
 }
@@ -131,7 +131,7 @@ fn badeu_mayday() {
 fn rohulk_sanctus() {
     compare_ur(
         "Feryquitous - Central Nucleus (Shiirn) [Sanctus Nexum]",
-        "replay-osu_1402167_2690174416",
+        "rohulk_sanctus",
         73.51,
     )
 }
@@ -140,7 +140,7 @@ fn rohulk_sanctus() {
 fn gn_strange() {
     compare_ur(
         "DJ Sharpnel - StrangeProgram (happy30) [Lesjuh's TAG]",
-        "replay-osu_27737_2170634214",
+        "gn_strange",
         150.93,
     )
 }
@@ -149,7 +149,7 @@ fn gn_strange() {
 fn whitecat_flamewall() {
     compare_ur(
         "Camellia - Flamewall (Sotarks) [ETERNAL SACRED FIRE]",
-        "replay-osu_3135149_4285493342",
+        "whitecat_flamewall",
         112.92,
     )
 }
@@ -158,7 +158,7 @@ fn whitecat_flamewall() {
 fn respektive_sink() {
     compare_ur(
         "Chroma - sink to the deep sea world (None1637) [AR10]",
-        "replay-osu_1636879_3357413950",
+        "respektive_sink",
         252.50,
     )
 }
