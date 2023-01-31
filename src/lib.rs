@@ -17,7 +17,7 @@ macro_rules! export_fns {
 
         #[cfg(not(any($( feature = $feature, )*)))]
         pub fn calculate_ur(map: &Beatmap, replay: &Replay) -> f64 {
-            impls::custom1::calculate_ur(map, replay)
+            impls::custom2::calculate_ur(map, replay)
         }
     }
 }
@@ -28,4 +28,5 @@ export_fns! {
     "stable" -> stable,
     "circleguard" -> circleguard,
     "custom1" -> custom1,
+    "custom2" -> custom2,
 }
