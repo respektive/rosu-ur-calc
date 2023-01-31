@@ -11,7 +11,7 @@ pub struct HitObjectManager<'h> {
     pub radius_sq: f32,
     minimal_start: usize,
     minimal_end: usize,
-    pub hit_objects: Vec<HitObject<'h>>, // TODO: remove pub
+    hit_objects: Vec<HitObject<'h>>,
 }
 
 impl HitObjectManager<'_> {

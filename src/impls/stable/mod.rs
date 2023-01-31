@@ -53,20 +53,6 @@ pub fn calculate_ur(map: &Beatmap, replay: &Replay) -> f64 {
         }
     }
 
-    let mut no_hits = 0;
-
-    for h in manager.hit_objects.iter() {
-        if !h.is_hit && (h.is_normal() || h.is_slider()) {
-            no_hits += 1;
-        }
-    }
-
-    assert_eq!(
-        no_hits, replay.count_miss,
-        "expected {} miss(es), got {no_hits}",
-        replay.count_miss
-    );
-
     let stats = ErrorStatistics::new(&hit_errors);
 
     stats.unstable_rate

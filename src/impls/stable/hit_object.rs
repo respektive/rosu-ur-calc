@@ -12,41 +12,6 @@ pub struct HitObject<'h> {
     h: &'h dyn HitObjectExt,
 }
 
-impl Debug for HitObject<'_> {
-    fn fmt(&self, f: &mut Formatter<'_>) -> FmtResult {
-        #[derive(Debug)]
-        enum HitObjectKind {
-            Circle,
-            Slider,
-            Spinner,
-        }
-
-        #[derive(Debug)]
-        #[allow(unused)]
-        struct HitObject {
-            time: i32,
-            pos: Pos2,
-            kind: HitObjectKind,
-            is_hit: bool,
-        }
-
-        let h = HitObject {
-            time: self.h.start_time(),
-            pos: self.h.pos(),
-            kind: if self.h.is_normal() {
-                HitObjectKind::Circle
-            } else if self.h.is_slider() {
-                HitObjectKind::Slider
-            } else {
-                HitObjectKind::Spinner
-            },
-            is_hit: self.is_hit,
-        };
-
-        Debug::fmt(&h, f)
-    }
-}
-
 impl<'h> HitObject<'h> {
     pub fn new(h: &'h dyn HitObjectExt) -> Self {
         Self { h, is_hit: false }
@@ -158,5 +123,40 @@ impl HitObjectExt for OsuObject {
                     && time <= end_time as i32
             }
         }
+    }
+}
+
+impl Debug for HitObject<'_> {
+    fn fmt(&self, f: &mut Formatter<'_>) -> FmtResult {
+        #[derive(Debug)]
+        enum HitObjectKind {
+            Circle,
+            Slider,
+            Spinner,
+        }
+
+        #[derive(Debug)]
+        #[allow(unused)]
+        struct HitObject {
+            time: i32,
+            pos: Pos2,
+            kind: HitObjectKind,
+            is_hit: bool,
+        }
+
+        let h = HitObject {
+            time: self.h.start_time(),
+            pos: self.h.pos(),
+            kind: if self.h.is_normal() {
+                HitObjectKind::Circle
+            } else if self.h.is_slider() {
+                HitObjectKind::Slider
+            } else {
+                HitObjectKind::Spinner
+            },
+            is_hit: self.is_hit,
+        };
+
+        Debug::fmt(&h, f)
     }
 }
