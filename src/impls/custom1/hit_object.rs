@@ -29,7 +29,7 @@ impl HitObject<'_> {
     }
 
     pub fn is_slider(&self) -> bool {
-        self.h.is_slider()
+        matches!(self.h.kind(), HitObjectKind::Slider)
     }
 
     /// If the note is a slider, return its endtime
@@ -38,13 +38,18 @@ impl HitObject<'_> {
     }
 }
 
+#[derive(Debug)]
+pub enum HitObjectKind {
+    Circle,
+    Slider,
+    Spinner,
+}
+
 pub trait HitObjectExt {
     fn start_time(&self) -> i32;
     fn slider_end_time(&self) -> Option<i32>;
     fn pos(&self) -> Pos2;
-    fn stack_count(&self) -> i32;
-    fn is_normal(&self) -> bool;
-    fn is_slider(&self) -> bool;
+    fn kind(&self) -> HitObjectKind;
 }
 
 impl HitObjectExt for OsuObject {
@@ -67,30 +72,17 @@ impl HitObjectExt for OsuObject {
     }
 
     #[inline]
-    fn stack_count(&self) -> i32 {
-        self.stack_height as i32
-    }
-
-    #[inline]
-    fn is_normal(&self) -> bool {
-        self.is_circle()
-    }
-
-    #[inline]
-    fn is_slider(&self) -> bool {
-        self.is_slider()
+    fn kind(&self) -> HitObjectKind {
+        match self.kind {
+            OsuObjectKind::Circle => HitObjectKind::Circle,
+            OsuObjectKind::Slider(_) => HitObjectKind::Slider,
+            OsuObjectKind::Spinner { .. } => HitObjectKind::Spinner,
+        }
     }
 }
 
 impl Debug for HitObject<'_> {
     fn fmt(&self, f: &mut Formatter<'_>) -> FmtResult {
-        #[derive(Debug)]
-        enum HitObjectKind {
-            Circle,
-            Slider,
-            Spinner,
-        }
-
         #[derive(Debug)]
         #[allow(unused)]
         struct HitObject {
@@ -103,13 +95,7 @@ impl Debug for HitObject<'_> {
         let h = HitObject {
             time: self.h.start_time(),
             pos: self.h.pos(),
-            kind: if self.h.is_normal() {
-                HitObjectKind::Circle
-            } else if self.h.is_slider() {
-                HitObjectKind::Slider
-            } else {
-                HitObjectKind::Spinner
-            },
+            kind: self.h.kind(),
             matched_frame: self.matched_frame,
         };
 
