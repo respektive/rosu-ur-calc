@@ -43,15 +43,13 @@ pub fn calculate_ur(map: &Beatmap, replay: &Replay) -> f64 {
         let h_opt = hit_objects[start_idx..end_idx]
             .iter()
             .zip(start_idx..)
-            .find(|(h, _)| {
-                !h.matched_frame && frame.pos.dist_sq(h.pos()) <= radius_sq && !h.ignore()
-            });
+            .find(|(h, _)| !h.found_hit && frame.pos.dist_sq(h.pos()) <= radius_sq && !h.ignore());
 
         let Some((h, i)) = h_opt else { continue };
 
         if let Some(prev) = i.checked_sub(1).map(|i| &hit_objects[i]) {
             // notelock
-            if !prev.matched_frame && frame.time - hw_50 <= prev.start_time() {
+            if !prev.found_hit && frame.time - hw_50 <= prev.start_time() {
                 continue;
             }
 
@@ -64,7 +62,7 @@ pub fn calculate_ur(map: &Beatmap, replay: &Replay) -> f64 {
         }
 
         hit_errors.push(frame.time - h.start_time());
-        hit_objects[i].matched_frame = true;
+        hit_objects[i].found_hit = true;
     }
 
     let stats = ErrorStatistics::new(&hit_errors);

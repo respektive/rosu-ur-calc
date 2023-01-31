@@ -6,7 +6,7 @@ use rosu_pp::{
 };
 
 pub struct HitObject<'h> {
-    pub matched_frame: bool,
+    pub found_hit: bool,
     h: &'h dyn HitObjectExt,
 }
 
@@ -14,7 +14,7 @@ impl<'h> HitObject<'h> {
     pub fn new(h: &'h dyn HitObjectExt) -> Self {
         Self {
             h,
-            matched_frame: false,
+            found_hit: false,
         }
     }
 }
@@ -106,7 +106,7 @@ impl Debug for HitObject<'_> {
             time: self.h.start_time(),
             pos: self.h.pos(),
             kind: self.h.kind(),
-            matched_frame: self.matched_frame,
+            matched_frame: self.found_hit,
         };
 
         Debug::fmt(&h, f)
