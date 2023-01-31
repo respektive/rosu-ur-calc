@@ -2,7 +2,7 @@ use std::env;
 
 use osu_db::Replay;
 use rosu_pp::Beatmap;
-use rosu_ur_calc::calculate_ur_stable as calculate_ur;
+use rosu_ur_calc::calculate_ur_circleguard as calculate_ur;
 
 fn main() {
     let args: Vec<String> = env::args().collect();
