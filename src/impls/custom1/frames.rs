@@ -33,10 +33,11 @@ impl HitFrames {
                     && (action.y - 500.0).abs() <= f32::EPSILON;
 
                 let keys = action.z as u8;
-                let new_press = (keys & !state.prev_keys) > 0;
+                let new_keys = keys & !state.prev_keys;
+                let is_doubletap = (new_keys & (M1 | M2)) == (M1 | M2);
                 state.prev_keys = keys;
 
-                let frame = (new_press && action.delta >= 0 && !skip).then_some(HitFrame {
+                let frame = (new_keys > 0 && action.delta >= 0 && !skip).then_some(HitFrame {
                     time: state.time_elapsed,
                     pos: Pos {
                         x: action.x,
@@ -44,12 +45,18 @@ impl HitFrames {
                     },
                 });
 
-                Some(frame)
+                let dup = frame.filter(|_| is_doubletap);
+
+                Some([frame, dup])
             })
+            .flatten()
             .flatten()
             .collect()
     }
 }
+
+const M1: u8 = 1 << 0;
+const M2: u8 = 1 << 1;
 
 #[derive(Copy, Clone, Debug)]
 pub struct HitFrame {
