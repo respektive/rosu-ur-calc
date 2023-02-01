@@ -99,14 +99,14 @@ impl Debug for HitObject<'_> {
             time: i32,
             pos: Pos2,
             kind: HitObjectKind,
-            matched_frame: bool,
+            found_hit: bool,
         }
 
         let h = HitObject {
             time: self.h.start_time(),
             pos: self.h.pos(),
             kind: self.h.kind(),
-            matched_frame: self.found_hit,
+            found_hit: self.found_hit,
         };
 
         Debug::fmt(&h, f)
