@@ -1,11 +1,10 @@
 use osu_db::Replay;
-use rosu_pp::{Beatmap, BeatmapExt};
+use rosu_pp::{osu::OsuObjectKind, Beatmap, BeatmapExt};
 
-use self::{error_stats::ErrorStatistics, frames::HitFrames, hit_object::HitObject};
+use self::{error_stats::ErrorStatistics, frames::HitFrames};
 
 mod error_stats;
 mod frames;
-mod hit_object;
 
 #[cfg_attr(not(feature = "custom2"), allow(unused))]
 pub fn calculate_ur(map: &Beatmap, replay: &Replay) -> f64 {
@@ -26,14 +25,13 @@ pub fn calculate_ur(map: &Beatmap, replay: &Replay) -> f64 {
     let radius_sq = radius_sq(cs);
 
     let hit_objects = map.osu_hitobjects(mods);
-    let mut hit_objects: Vec<_> = hit_objects.iter().map(|h| HitObject::new(h)).collect();
     let mut hit_errors = Vec::with_capacity(hit_objects.len());
 
     let frames = HitFrames::from_replay(replay);
     let mut frames = frames.as_slice();
 
     for i in 0..hit_objects.len() {
-        if hit_objects[i].ignore() {
+        if hit_objects[i].is_spinner() {
             continue;
         }
 
@@ -41,12 +39,15 @@ pub fn calculate_ur(map: &Beatmap, replay: &Replay) -> f64 {
             // not the first note
             .checked_sub(1)
             // previous note was a slider
-            .and_then(|k| hit_objects[k].slider_end_time())
+            .and_then(|k| match hit_objects[k].kind {
+                OsuObjectKind::Slider(ref slider) => Some(slider.end_time as i32),
+                OsuObjectKind::Circle | OsuObjectKind::Spinner { .. } => None,
+            })
             // current note is a slider
             .filter(|_| hit_objects[i].is_slider());
 
-        let start_time = hit_objects[i].start_time();
-        let pos = hit_objects[i].pos();
+        let start_time = hit_objects[i].start_time as i32;
+        let pos = hit_objects[i].stacked_pos();
 
         let time_start = start_time - hw_50;
         let time_end = start_time + hw_50;
@@ -66,7 +67,6 @@ pub fn calculate_ur(map: &Beatmap, replay: &Replay) -> f64 {
         let next_start = match frame_opt {
             Some((frame, j)) => {
                 hit_errors.push(frame.time - start_time);
-                hit_objects[i].found_hit = true;
 
                 j + 1
             }
